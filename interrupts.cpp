@@ -7,32 +7,61 @@
 
 #include<interrupts.hpp>
 
+// Load vector addresses from file
+std::vector<std::string> load_vectors(const std::string& filename) {
+    std::ifstream file(filename);
+    std::vector<std::string> vectors;
+    std::string address;
+    while (file >> address) vectors.push_back(address);
+    return vectors;
+}
+
+// Load device delays from file
+std::vector<int> load_delays(const std::string& filename) {
+    std::ifstream file(filename);
+    std::vector<int> delays;
+    int val;
+    while (file >> val) delays.push_back(val);
+    return delays;
+}
+
+// Parse a single trace line (activity, device number or duration)
+std::pair<std::string, int> parse_trace(const std::string& line) {
+    std::string type;
+    int val = 0;
+    std::stringstream ss(line);
+    ss >> type >> val;
+    return { type, val };
+}
+
 int main(int argc, char** argv) {
 
-    //vectors is a C++ std::vector of strings that contain the address of the ISR
-    //delays  is a C++ std::vector of ints that contain the delays of each device
-    //the index of these elemens is the device number, starting from 0
-    auto [vectors, delays] = parse_args(argc, argv);
-    std::ifstream input_file(argv[1]);
+    // If no argument, use default external files
+    std::string vector_file = "vector_table.txt";
+    std::string device_file = "device_table.txt";
+    std::string input_file_name = "input_files/program1.txt";
+    std::string output_file_name = "output_files/execution.txt";
 
-    std::string trace;      //!< string to store single line of trace file
-    std::string execution;  //!< string to accumulate the execution output
+    // Load external tables
+    auto vectors = load_vectors(vector_file);
+    auto delays  = load_delays(device_file);
 
-    /******************ADD YOUR VARIABLES HERE*************************/
+    std::ifstream input_file(input_file_name);
+    std::string trace;
+    std::string execution;
+
     int current_time = 0;
     const int context_save_time = 10;
-    const int isr_time = 40; 
-    
+    const int isr_time = 40;
+
     auto add = [&](int start, int dur, const std::string& msg) {
         execution += std::to_string(start) + ", " + std::to_string(dur) + ", " + msg + "\n";
     };
 
-    /******************************************************************/
-    //parse each line of the input trace file
-     while(std::getline(input_file, trace)) {
+    while (std::getline(input_file, trace)) {
+        if (trace.empty()) continue;
         auto [activity, duration_intr] = parse_trace(trace);
-         
-        /******************ADD YOUR SIMULATION CODE HERE*************************/
+
         if (activity == "CPU") {
             add(current_time, duration_intr, "CPU Burst");
             current_time += duration_intr;
@@ -44,26 +73,21 @@ int main(int argc, char** argv) {
                 continue;
             }
 
-            // standard interrupt entry
-            auto pre = intr_boilerplate(current_time, dev, context_save_time, vectors);
-            execution += pre.first;
-            current_time = pre.second;
+            add(current_time, context_save_time, "Context save (SYSCALL)");
+            current_time += context_save_time;
 
-            // ISR 
-            add(current_time, isr_time, "SYSCALL: run the ISR (device driver)");
+            add(current_time, isr_time, "SYSCALL: run ISR " + vectors[dev]);
             current_time += isr_time;
 
-            // transfer from device to memory
-            add(current_time, 40, "transfer data from device to memory");
+            add(current_time, 40, "Transfer data from device to memory");
             current_time += 40;
 
             int check_err = delays[dev] - (isr_time + 40);
             if (check_err < 0) check_err = 0;
-            add(current_time, check_err, "check for errors");
+            add(current_time, check_err, "Check for errors");
             current_time += check_err;
 
-            // restore context + IRET 
-            add(current_time, context_save_time, "context restored");
+            add(current_time, context_save_time, "Context restored");
             current_time += context_save_time;
 
             add(current_time, 1, "IRET");
@@ -76,34 +100,34 @@ int main(int argc, char** argv) {
                 continue;
             }
 
-            // standard interrupt entry
-            auto pre = intr_boilerplate(current_time, dev, context_save_time, vectors);
-            execution += pre.first;
-            current_time = pre.second;
+            add(current_time, context_save_time, "Context save (END_IO)");
+            current_time += context_save_time;
 
-            // ISR work to service completion
-            add(current_time, isr_time, "ENDIO: run the ISR (device driver)");
+            add(current_time, isr_time, "END_IO: run ISR " + vectors[dev]);
             current_time += isr_time;
 
-            // device status/cleanup to match average delay
             int check_status = delays[dev] - isr_time;
             if (check_status < 0) check_status = 0;
-            add(current_time, check_status, "check device status");
+            add(current_time, check_status, "Check device status");
             current_time += check_status;
 
-            // restore context + IRET 
-            add(current_time, context_save_time, "context restored");
+            add(current_time, context_save_time, "Context restored");
             current_time += context_save_time;
 
             add(current_time, 1, "IRET");
             current_time += 1;
         }
-        /************************************************************************/
+        else {
+            add(current_time, 0, "Unknown activity: " + activity);
+        }
     }
 
     input_file.close();
 
-    write_output(execution);
+    std::ofstream output_file(output_file_name);
+    output_file << execution;
+    output_file.close();
 
+    std::cout << "Execution finished. Output written to " << output_file_name << std::endl;
     return 0;
 }
