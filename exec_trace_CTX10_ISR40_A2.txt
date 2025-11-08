@@ -1,0 +1,104 @@
+0, 100, CPU Burst
+100, 10, Context save (SYSCALL)
+110, 40, SYSCALL: run ISR 0X029C
+150, 40, Transfer data from device to memory
+190, 60, Check for errors
+250, 10, Context restored
+260, 1, IRET
+261, 50, CPU Burst
+311, 10, Context save (END_IO)
+321, 40, END_IO: run ISR 0X029C
+361, 110, Check device status
+471, 10, Context restored
+481, 1, IRET
+482, 100, CPU Burst
+582, 10, Context save (SYSCALL)
+592, 40, SYSCALL: run ISR 0X029C
+632, 40, Transfer data from device to memory
+672, 60, Check for errors
+732, 10, Context restored
+742, 1, IRET
+743, 50, CPU Burst
+793, 10, Context save (END_IO)
+803, 40, END_IO: run ISR 0X029C
+843, 110, Check device status
+953, 10, Context restored
+963, 1, IRET
+964, 100, CPU Burst
+1064, 10, Context save (SYSCALL)
+1074, 40, SYSCALL: run ISR 0X029C
+1114, 40, Transfer data from device to memory
+1154, 60, Check for errors
+1214, 10, Context restored
+1224, 1, IRET
+1225, 50, CPU Burst
+1275, 10, Context save (END_IO)
+1285, 40, END_IO: run ISR 0X029C
+1325, 110, Check device status
+1435, 10, Context restored
+1445, 1, IRET
+1446, 100, CPU Burst
+1546, 10, Context save (SYSCALL)
+1556, 40, SYSCALL: run ISR 0X029C
+1596, 40, Transfer data from device to memory
+1636, 60, Check for errors
+1696, 10, Context restored
+1706, 1, IRET
+1707, 50, CPU Burst
+1757, 10, Context save (END_IO)
+1767, 40, END_IO: run ISR 0X029C
+1807, 110, Check device status
+1917, 10, Context restored
+1927, 1, IRET
+1928, 100, CPU Burst
+2028, 10, Context save (SYSCALL)
+2038, 40, SYSCALL: run ISR 0X029C
+2078, 40, Transfer data from device to memory
+2118, 60, Check for errors
+2178, 10, Context restored
+2188, 1, IRET
+2189, 50, CPU Burst
+2239, 10, Context save (END_IO)
+2249, 40, END_IO: run ISR 0X029C
+2289, 110, Check device status
+2399, 10, Context restored
+2409, 1, IRET
+2410, 100, CPU Burst
+2510, 10, Context save (SYSCALL)
+2520, 40, SYSCALL: run ISR 0X029C
+2560, 40, Transfer data from device to memory
+2600, 60, Check for errors
+2660, 10, Context restored
+2670, 1, IRET
+2671, 50, CPU Burst
+2721, 10, Context save (END_IO)
+2731, 40, END_IO: run ISR 0X029C
+2771, 110, Check device status
+2881, 10, Context restored
+2891, 1, IRET
+2892, 100, CPU Burst
+2992, 10, Context save (SYSCALL)
+3002, 40, SYSCALL: run ISR 0X029C
+3042, 40, Transfer data from device to memory
+3082, 60, Check for errors
+3142, 10, Context restored
+3152, 1, IRET
+3153, 50, CPU Burst
+3203, 10, Context save (END_IO)
+3213, 40, END_IO: run ISR 0X029C
+3253, 110, Check device status
+3363, 10, Context restored
+3373, 1, IRET
+3374, 100, CPU Burst
+3474, 10, Context save (SYSCALL)
+3484, 40, SYSCALL: run ISR 0X029C
+3524, 40, Transfer data from device to memory
+3564, 60, Check for errors
+3624, 10, Context restored
+3634, 1, IRET
+3635, 50, CPU Burst
+3685, 10, Context save (END_IO)
+3695, 40, END_IO: run ISR 0X029C
+3735, 110, Check device status
+3845, 10, Context restored
+3855, 1, IRET
